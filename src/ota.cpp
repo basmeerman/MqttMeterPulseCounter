@@ -29,6 +29,6 @@ void setup_ota() {
   ArduinoOTA.begin();
 }
 
-void ota_task() {
+void monitor_ota() {
   ArduinoOTA.handle();
 }

@@ -1,4 +1,5 @@
 #include <Meter.h>
+#include <TaskSchedulerDeclarations.h>
 #include "meters.h"
 #include "config.h"
 
@@ -19,3 +20,10 @@ void setup_meters() {
   attachInterrupt(METER_2_PIN, meter2_pulse, RISING);
   attachInterrupt(METER_3_PIN, meter3_pulse, RISING);
 }
+
+void update_meter_average() {
+    meter1.update_average();
+    meter2.update_average();
+    meter3.update_average();
+}
+

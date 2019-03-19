@@ -1,3 +1,6 @@
 .pioenvs
 .clang_complete
 .gcc-flags.json
+.vscode/.BROWSE.C_CPP.DB
+.vscode/.BROWSE.C_CPP.DB-shm
+.vscode/.BROWSE.C_CPP.DB-wal

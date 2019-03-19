@@ -1,17 +1,23 @@
-#include <PeriodicTask.h>
+#include <TaskSchedulerDeclarations.h>
 #include "led.h"
 #include "mqtt.h"
 #include "wifi.h"
 #include "config.h"
 #include "meters.h"
 
-PeriodicTask update_meter_average(5000);
-
 void setup_mqtt() {
   mqtt_client.setServer(MQTT_SERVER, 1883);
 }
 
-void reconnect_mqtt() {
+bool mqtt_connected(){
+  return mqtt_client.connected();
+}
+
+void ensure_mqtt_connected() {
+  monitor_mqtt();
+}
+
+void monitor_mqtt() {
   // Loop until we're reconnected
   while (!mqtt_client.connected()) {
     toggle_led(HIGH);
@@ -21,6 +27,7 @@ void reconnect_mqtt() {
       Serial.println("mqtt connected");
       toggle_led(LOW);
       delay(1000);
+      //TODO replace delay
     } else {
       WiFi.printDiag(Serial);
       Serial.print("mqtt failed, rc=");
@@ -28,16 +35,17 @@ void reconnect_mqtt() {
       Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
       delay(5000);
+      //TODO replace delay
     }
   }
 }
 
 void mqtt_publish_meter_reading(Meter* meter) {
   // if (!meter.has_readings()) return;
-  StaticJsonBuffer<JSON_BUFFER_SIZE> jsonBuffer;
+  StaticJsonDocument<JSON_BUFFER_SIZE> jsondoc;
   
   // create JSON
-  JsonObject& root = jsonBuffer.createObject();
+  JsonObject root = jsondoc.to<JsonObject>();
   root["count"] = meter->count;
   root["power"] = meter->get_power();
   root["kwhr"] = meter->elapsed_kwhr;
@@ -46,7 +54,7 @@ void mqtt_publish_meter_reading(Meter* meter) {
   
   // write JSON to buffer
   char buffer[256];
-  root.printTo(buffer, sizeof(buffer));
+  serializeJson(root, buffer);
   
   // publish
   char topic[20];
@@ -60,28 +68,18 @@ void mqtt_publish_uptime() {
   mqtt_client.publish("meter/uptime", buffer);
 }
 
-void mqtt_task() {
-  // check connection
-  if (wifi_connected()) {
-    if (!mqtt_client.connected()) reconnect_mqtt();
-    mqtt_client.loop();
+void publish_report() {
+  ensure_wifi_connected();
+  ensure_mqtt_connected();
+
+  mqtt_client.loop();
+
+  toggle_led(HIGH);
   
-    // update mqtt
-    if (update_mqtt.tick()) {
-      toggle_led(HIGH);
-      
-      mqtt_publish_meter_reading(&meter1);
-      mqtt_publish_meter_reading(&meter2);
-      mqtt_publish_meter_reading(&meter3);
-      mqtt_publish_uptime();
-      
-      toggle_led(LOW);
-    }
-  }
+  mqtt_publish_meter_reading(&meter1);
+  mqtt_publish_meter_reading(&meter2);
+  mqtt_publish_meter_reading(&meter3);
+  mqtt_publish_uptime();
   
-  if (update_meter_average.tick()) {
-    meter1.update_average();
-    meter2.update_average();
-    meter3.update_average();
-  }
+  toggle_led(LOW);
 }

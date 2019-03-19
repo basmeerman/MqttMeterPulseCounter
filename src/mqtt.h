@@ -1,6 +1,6 @@
 #include <ArduinoJson.h>
 #include <PubSubClient.h>
-#include <PeriodicTask.h>
+#include <TaskSchedulerDeclarations.h>
 #include <Meter.h>
 #include "wifi.h"
 
@@ -9,11 +9,13 @@
 
 const int JSON_BUFFER_SIZE = JSON_OBJECT_SIZE(5);
 
-static PeriodicTask update_mqtt(30000);
+extern Task t_publish_report;
+extern Task t_monitor_mqtt;
+
 static PubSubClient mqtt_client(espClient);
 
 void setup_mqtt();
-void reconnect_mqtt();
-void mqtt_task();
+void monitor_mqtt();
+void publish_report();
 
 #endif

@@ -24,7 +24,7 @@ class Meter
   
   private:
 		volatile unsigned int _pulses_per_kwhr;
-    volatile unsigned long _pulse_time;
+    	volatile unsigned long _pulse_time;
 		volatile unsigned long _last_pulse_time;
 };
 
