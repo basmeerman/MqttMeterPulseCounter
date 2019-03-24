@@ -17,11 +17,14 @@
 
 Scheduler runner;
 
+void publish_heartbeat();
+
 Task t_monitor_wifi(30UL*TASK_SECOND, TASK_FOREVER, &monitor_wifi);
 Task t_monitor_mqtt(30UL*TASK_SECOND, TASK_FOREVER, &monitor_mqtt);
 Task t_monitor_ota(0, TASK_FOREVER, &monitor_ota);
 Task t_update_meter_average(5UL*TASK_SECOND, TASK_FOREVER, &update_meter_average);
 Task t_publish_report(30UL*TASK_SECOND, TASK_FOREVER, &publish_report);
+Task t_publish_heartbeat(30UL*TASK_SECOND, TASK_FOREVER, &publish_heartbeat);
 
 void setup_tasks() {
   runner.init();
@@ -41,6 +44,9 @@ void setup_tasks() {
   runner.addTask(t_publish_report);
   t_publish_report.enable();
 
+  runner.addTask(t_publish_heartbeat);
+  t_publish_heartbeat.enable();
+
   runner.startNow();
 }
 
@@ -48,4 +54,16 @@ void execute_tasks() {
   runner.execute();
 }
 
+void publish_heartbeat()
+{
+  StaticJsonDocument<JSON_BUFFER_SIZE> jsondoc;
 
+  // create JSON
+  JsonObject root = jsondoc.to<JsonObject>();
+  //root["time"] = ;
+  //TODO implement.
+  root["uptime"] = millis() / 1000;
+  root["freemem"] = ESP.getFreeHeap();
+  
+  publish_mqtt(root, TOPIC_HEARTBEAT);
+}

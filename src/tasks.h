@@ -3,4 +3,5 @@
 
 void setup_tasks();
 void execute_tasks();
+void publish_heartbeat();
 #endif
