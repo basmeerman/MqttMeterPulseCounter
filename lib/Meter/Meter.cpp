@@ -1,6 +1,7 @@
 #include "Meter.h"
 #include "Arduino.h"
 #include <ArduinoJson.h>
+#include <TimeLib.h> 
 
 Meter::Meter(const char *id, MeterType meter_type, unsigned int pulses_per_unit)
 : id(id)
@@ -112,7 +113,10 @@ JsonObject Meter::get_json()
   }
   root["count"] = count;
   root["delay"] = pulse_length;
-  root["time"] = ""; //TODO add time.
+  
+  char tt[19];
+  snprintf(tt, 19, "%04d-%02d-%02d %02d:%02d:%02d", year(), month(), day(), hour(), minute(), second());
+  root["time"] = tt;
   
   return root;
 }

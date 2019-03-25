@@ -5,7 +5,7 @@
 #include "mqtt.h"
 #include "meters.h"
 #include "tasks.h"
-
+#include "time.h"
 
 void setup() {
   Serial.begin(115200);
@@ -13,6 +13,7 @@ void setup() {
   
   setup_led();
   setup_wifi();
+  setup_time();
   setup_mqtt();
   setup_ota();
   setup_meters();

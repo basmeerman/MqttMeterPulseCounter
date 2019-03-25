@@ -27,7 +27,6 @@ void monitor_mqtt() {
       Serial.println("mqtt connected");
       toggle_led(LOW);
       delay(1000);
-      //TODO replace delay
     } else {
       WiFi.printDiag(Serial);
       Serial.print("mqtt failed, rc=");
@@ -35,7 +34,6 @@ void monitor_mqtt() {
       Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
       delay(5000);
-      //TODO replace delay
     }
   }
 }

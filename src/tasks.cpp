@@ -9,6 +9,7 @@
 //  #define _TASK_DEBUG             // Make all methods and variables public for debug purposes
 
 #include <TaskScheduler.h>
+#include <TimeLib.h>
 #include "wifi.h"
 #include "mqtt.h"
 #include "meters.h"
@@ -60,8 +61,11 @@ void publish_heartbeat()
 
   // create JSON
   JsonObject root = jsondoc.to<JsonObject>();
-  //root["time"] = ;
-  //TODO implement.
+  
+  char tt[19];
+  snprintf(tt, 19, "%04d-%02d-%02d %02d:%02d:%02d", year(), month(), day(), hour(), minute(), second());
+  root["time"] = tt;
+  
   root["uptime"] = millis() / 1000;
   root["freemem"] = ESP.getFreeHeap();
   

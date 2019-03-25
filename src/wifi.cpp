@@ -13,7 +13,6 @@ void setup_wifi() {
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("Connection Failed! Rebooting in 5 seconds...");
     delay(5000);
-    //TODO replace delay
     ESP.restart();
   }
 }
